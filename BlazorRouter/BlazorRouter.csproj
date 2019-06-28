@@ -6,6 +6,14 @@
     <LangVersion>7.3</LangVersion>
     <RazorLangVersion>3.0</RazorLangVersion>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>hez2010</Authors>
+    <Description>An awesome router for Blazor.</Description>
+    <Copyright>hez2010</Copyright>
+    <PackageProjectUrl>https://github.com/hez2010/BlazorRouter</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/hez2010/BlazorRouter</RepositoryUrl>
+    <PackageReleaseNotes>First version released.</PackageReleaseNotes>
+    <PackageId>Hez2010.BlazorRouter</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
