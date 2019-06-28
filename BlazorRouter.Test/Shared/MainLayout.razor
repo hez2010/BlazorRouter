@@ -1,0 +1,40 @@
+﻿<div class="sidebar">
+    <NavMenu />
+</div>
+
+<div class="main">
+    <div class="top-row px-4">
+        <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
+    </div>
+
+    <div class="content px-4">
+        <Switch>
+            <Route Template="/">
+                <Index CountValue="@countValue"></Index>
+            </Route>
+            <Route Template="/counter">
+                <Counter @bind-CurrentCount="countValue" ChangeCount="@changeCountValue"></Counter>
+            </Route>
+            <Route Template="/counter/{init:int}">
+                <Counter @bind-CurrentCount="countValue" ChangeCount="@changeCountValue"></Counter>
+            </Route>
+            <Route Template="/fetchdata">
+                <FetchData></FetchData>
+            </Route>
+            <Route>
+                <h2>Error</h2>
+                <p class="text-danger">No such page.</p>
+            </Route>
+        </Switch>
+    </div>
+</div>
+
+@code {
+    private int countValue { get; set; } = 0;
+
+    void changeCountValue(int value)
+    {
+        countValue = value;
+        this.StateHasChanged();
+    }
+}

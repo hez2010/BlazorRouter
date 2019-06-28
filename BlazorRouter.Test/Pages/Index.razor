@@ -1,0 +1,14 @@
+﻿<h1>Hello, world!</h1>
+
+Welcome to your new app. You have counted to @CountValue.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+<br />
+<NavLink href="/counter/500">
+    Click here to count from 500 directly
+</NavLink>
+
+@code {
+    [Parameter] int CountValue { get; set; }
+}
