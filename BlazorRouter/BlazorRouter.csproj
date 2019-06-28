@@ -14,6 +14,7 @@
     <RepositoryUrl>https://github.com/hez2010/BlazorRouter</RepositoryUrl>
     <PackageReleaseNotes>First version released.</PackageReleaseNotes>
     <PackageId>Hez2010.BlazorRouter</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
