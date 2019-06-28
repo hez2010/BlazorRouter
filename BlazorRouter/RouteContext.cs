@@ -23,6 +23,7 @@ namespace BlazorRouter
             }
         }
 
+        public string TemplateText { get; set; }
         public string[] Segments { get; }
         public RenderFragment Fragment { get; set; }
 

@@ -14,7 +14,7 @@
 
 @code {
     [Parameter] public RenderFragment ChildContent { get; set; }
-    [Parameter] public EventHandler<LocationChangedEventArgs> OnMatch { get; set; }
+    [Parameter] public EventHandler<RouteMatchedEventArgs> OnMatch { get; set; }
 
     private readonly RouteTable routes = new RouteTable();
     private bool navigationInterceptionEnabled;
@@ -29,7 +29,6 @@
     {
         this.location = e.Location;
 
-        OnMatch?.Invoke(this, e);
         await SwitchContent(e.IsNavigationIntercepted);
     }
 
@@ -51,6 +50,7 @@
         {
             currentFragment = context.Fragment;
             parameters = context.Parameters;
+            OnMatch?.Invoke(this, new RouteMatchedEventArgs(this.location, context.TemplateText, context.Parameters, context.Fragment));
 
             this.StateHasChanged();
         }

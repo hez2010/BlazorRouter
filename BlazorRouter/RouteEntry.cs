@@ -28,6 +28,7 @@ namespace BlazorRouter
             {
                 context.Parameters = GetParameters();
                 context.Fragment = Fragment;
+                context.TemplateText = Template.TemplateText;
                 return;
             }
 
@@ -47,6 +48,7 @@ namespace BlazorRouter
                 else
                 {
                     context.Fragment = Fragment;
+                    context.TemplateText = Template.TemplateText;
                     if (segment.IsParameter)
                     {
                         GetParameters()[segment.Value] = matchedParameterValue;
@@ -56,6 +58,7 @@ namespace BlazorRouter
 
             context.Parameters = parameters;
             context.Fragment = Fragment;
+            context.TemplateText = Template.TemplateText;
 
             IDictionary<string, object> GetParameters()
             {
