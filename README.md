@@ -1,7 +1,8 @@
-# BlazorRouter
+# BlazorRouter [![nuget](https://img.shields.io/nuget/vpre/Hez2010.BlazorRouter.svg)](https://www.nuget.org/packages/Hez2010.BlazorRouter)
 #### An awesome router for blazor
 
 ## Installation
+Via nuget package:
 ```
 dotnet add package Hez2010.BlazorRouter
 ```
