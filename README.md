@@ -18,4 +18,5 @@ The order of routing is from the top to the bottom in `<Switch>`, and it will us
 If `Template` was not defined or defined as empty, it will match any path. 
 
 ## Example
-Please check out `BlazorRouter.Sample`.
+[Visit Sample](https://hez2010.github.io/BlazorRouter)  
+For source, please check out `BlazorRouter.Sample`.
