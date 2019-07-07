@@ -18,6 +18,27 @@ Parameters in the routing template will be passed as `IDictionary<string, object
 The order of routing is from the top to the bottom in `<Switch>`, and it will use the first matched item.  
 If `Template` was not defined or defined as empty, it will match any path. 
 
-## Example
+For example:
+```razor
+<Switch>
+    <Route Template="/">
+        <Home />
+    </Route>
+    <Route Template="/user/{id:string}">
+        <User />
+    </Route>
+    <Route Template="/login">
+        <Account Action="Login" />
+    </Route>
+    <Route Template="/register">
+        <Account Action="Register" />
+    </Route>
+    <Route>
+        <p>404</p>
+    </Route>
+</Switch>
+```
+
+## Live Example
 [Visit Sample](https://hez2010.github.io/BlazorRouter)  
 For source, please check out `BlazorRouter.Sample`.
