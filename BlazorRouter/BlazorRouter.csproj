@@ -12,7 +12,7 @@
     <Copyright>hez2010</Copyright>
     <PackageProjectUrl>https://github.com/hez2010/BlazorRouter</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hez2010/BlazorRouter</RepositoryUrl>
-    <PackageReleaseNotes>First version released.</PackageReleaseNotes>
+    <PackageReleaseNotes>Support ASP.NET Core 3.0 preview 8</PackageReleaseNotes>
     <PackageId>Hez2010.BlazorRouter</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>BlazorRouter</Product>
