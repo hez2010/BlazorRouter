@@ -80,7 +80,7 @@ namespace BlazorRouter
             return Task.CompletedTask;
         }
 
-        protected override Task OnInitAsync()
+        protected override Task OnInitializedAsync()
         {
             this.baseUri = UriHelper.GetBaseUri();
             this.location = UriHelper.GetAbsoluteUri();

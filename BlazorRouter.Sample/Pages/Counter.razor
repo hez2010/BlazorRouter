@@ -2,11 +2,11 @@
 
 <p>Current count: @CurrentCount</p>
 
-<button class="btn btn-primary" @onclick="@(() => ChangeCount(CurrentCount + 1))">Click me</button>
+<button class="btn btn-primary" @onclick="() => ChangeCount(CurrentCount + 1)">Click me</button>
 
 @code {
     [Parameter] public int CurrentCount { get; set; } = 0;
-    [Parameter] private EventCallback<int> CurrentCountChanged { get; set; }
+    [Parameter] public EventCallback<int> CurrentCountChanged { get; set; }
     [Parameter] public Action<int> ChangeCount { get; set; }
     [CascadingParameter(Name = "RouteParameters")] IDictionary<string, object> parameters { get; set; }
     private bool parameterHasSet = false;

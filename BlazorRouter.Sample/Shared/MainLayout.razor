@@ -10,7 +10,7 @@
     <div class="content px-4">
         <Switch>
             <Route Template="/">
-                <Index CountValue="@countValue"></Index>
+                <HomePage CountValue="@countValue"></HomePage>
             </Route>
             <Route Template="/counter">
                 <Counter @bind-CurrentCount="countValue" ChangeCount="@changeCountValue"></Counter>
