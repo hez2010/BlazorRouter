@@ -1,22 +1,24 @@
-﻿<div class="sidebar">
+﻿@inherits LayoutComponentBase
+
+<div class="sidebar">
     <NavMenu />
 </div>
 
 <div class="main">
     <div class="top-row px-4">
-        <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
+        <a href="https://docs.microsoft.com/en-us/aspnet/" target="_blank">About</a>
     </div>
 
     <div class="content px-4">
         <Switch>
             <Route Template="/">
-                <HomePage CountValue="@countValue"></HomePage>
+                <Index CountValue="@countValue"></Index>
             </Route>
             <Route Template="/counter">
-                <Counter @bind-CurrentCount="countValue" ChangeCount="@changeCountValue"></Counter>
+                <Counter @bind-CurrentCount="countValue" ChangeCount="@ChangeCountValue"></Counter>
             </Route>
             <Route Template="/counter/{init:int}">
-                <Counter @bind-CurrentCount="countValue" ChangeCount="@changeCountValue"></Counter>
+                <Counter @bind-CurrentCount="countValue" ChangeCount="@ChangeCountValue"></Counter>
             </Route>
             <Route Template="/fetchdata">
                 <FetchData></FetchData>
@@ -32,7 +34,7 @@
 @code {
     private int countValue { get; set; } = 0;
 
-    void changeCountValue(int value)
+    void ChangeCountValue(int value)
     {
         countValue = value;
         this.StateHasChanged();

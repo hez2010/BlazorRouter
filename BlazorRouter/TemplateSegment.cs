@@ -56,11 +56,9 @@ namespace BlazorRouter
 
                 return true;
             }
-            else
-            {
-                matchedParameterValue = null;
-                return string.Equals(Value, pathSegment, StringComparison.OrdinalIgnoreCase);
-            }
+
+            matchedParameterValue = null;
+            return string.Equals(Value, pathSegment, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

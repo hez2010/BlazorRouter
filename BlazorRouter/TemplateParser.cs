@@ -1,5 +1,6 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
 using System;
 
 namespace BlazorRouter
@@ -21,7 +22,7 @@ namespace BlazorRouter
     internal class TemplateParser
     {
         public static readonly char[] InvalidParameterNameCharacters =
-            new char[] { '*', '?', '{', '}', '=', '.' };
+            { '*', '?', '{', '}', '=', '.' };
 
         internal static RouteTemplate ParseTemplate(string template)
         {
@@ -50,7 +51,7 @@ namespace BlazorRouter
 
                 if (segment[0] != '{')
                 {
-                    if (segment[segment.Length - 1] == '}')
+                    if (segment[^1] == '}')
                     {
                         throw new InvalidOperationException(
                             $"Invalid template '{template}'. Missing '{{' in parameter segment '{segment}'.");
@@ -59,7 +60,7 @@ namespace BlazorRouter
                 }
                 else
                 {
-                    if (segment[segment.Length - 1] != '}')
+                    if (segment[^1] != '}')
                     {
                         throw new InvalidOperationException(
                             $"Invalid template '{template}'. Missing '}}' in parameter segment '{segment}'.");
@@ -78,7 +79,7 @@ namespace BlazorRouter
                             $"Invalid template '{template}'. The character '{segment[invalidCharacter]}' in parameter segment '{segment}' is not allowed.");
                     }
 
-                    templateSegments[i] = new TemplateSegment(originalTemplate, segment.Substring(1, segment.Length - 2), isParameter: true);
+                    templateSegments[i] = new TemplateSegment(originalTemplate, segment[1..^1], isParameter: true);
                 }
             }
 

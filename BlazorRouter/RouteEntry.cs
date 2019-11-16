@@ -1,9 +1,8 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.AspNetCore.Components;
-using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Components;
 
 namespace BlazorRouter
 {
@@ -45,14 +44,12 @@ namespace BlazorRouter
                 {
                     return;
                 }
-                else
+
+                context.Fragment = Fragment;
+                context.TemplateText = Template.TemplateText;
+                if (segment.IsParameter)
                 {
-                    context.Fragment = Fragment;
-                    context.TemplateText = Template.TemplateText;
-                    if (segment.IsParameter)
-                    {
-                        GetParameters()[segment.Value] = matchedParameterValue;
-                    }
+                    GetParameters()[segment.Value] = matchedParameterValue;
                 }
             }
 

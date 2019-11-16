@@ -25,11 +25,9 @@ namespace BlazorRouter
                 convertedValue = result;
                 return true;
             }
-            else
-            {
-                convertedValue = null;
-                return false;
-            }
+
+            convertedValue = null;
+            return false;
         }
     }
 }

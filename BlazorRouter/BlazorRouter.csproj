@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <IsPackable>true</IsPackable>
-    <LangVersion>7.3</LangVersion>
-    <RazorLangVersion>3.0</RazorLangVersion>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>hez2010</Authors>
@@ -12,11 +10,11 @@
     <Copyright>hez2010</Copyright>
     <PackageProjectUrl>https://github.com/hez2010/BlazorRouter</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hez2010/BlazorRouter</RepositoryUrl>
-    <PackageReleaseNotes>Support ASP.NET Core 3.0 preview 8</PackageReleaseNotes>
+    <PackageReleaseNotes>Support ASP.NET Core 3.0</PackageReleaseNotes>
     <PackageId>Hez2010.BlazorRouter</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>BlazorRouter</Product>
-    <Version>1.0.2</Version>
+    <Version>1.1.0</Version>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <Company>hez2010</Company>
   </PropertyGroup>
@@ -29,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.0.0-preview8.19405.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.0.0" />
   </ItemGroup>
 
 </Project>

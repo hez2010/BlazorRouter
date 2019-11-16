@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.RenderTree;
+using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Routing;
 
 namespace BlazorRouter
@@ -26,24 +28,21 @@ namespace BlazorRouter
             CreateCascadingValue(builder, seq, parameters, "RouteParameters", currentFragment);
         }
 
-        [Inject] private IUriHelper UriHelper { get; set; }
+        [Inject] private NavigationManager NaviManager { get; set; }
         [Inject] private INavigationInterception NavigationInterception { get; set; }
-        [Inject] private IComponentContext ComponentContext { get; set; }
         [Parameter] public RenderFragment ChildContent { get; set; }
+        [Parameter] public Assembly Assembly { get; set; }
         [Parameter] public EventHandler<RouteMatchedEventArgs> OnMatch { get; set; }
 
         private readonly RouteTable routes = new RouteTable();
-        private bool navigationInterceptionEnabled;
         private string location = "";
-        private string baseUri = "";
         private RenderFragment currentFragment;
         private IDictionary<string, object> parameters;
 
-        static readonly char[] queryOrHashStartChar = new[] { '?', '#' };
+        static readonly char[] queryOrHashStartChar = { '?', '#' };
         private async void LocationChanged(object sender, LocationChangedEventArgs e)
         {
-            this.location = e.Location;
-
+            location = e.Location;
             await SwitchContent(e.IsNavigationIntercepted);
         }
 
@@ -55,7 +54,7 @@ namespace BlazorRouter
 
         private Task SwitchContent(bool isNavigationIntercepted)
         {
-            var path = UriHelper.ToBaseRelativePath(this.baseUri, this.location);
+            var path = NaviManager.ToBaseRelativePath(NaviManager.Uri);
             path = "/" + StringUntilAny(path, queryOrHashStartChar);
 
             var context = new RouteContext(path);
@@ -65,15 +64,15 @@ namespace BlazorRouter
             {
                 currentFragment = context.Fragment;
                 parameters = context.Parameters;
-                OnMatch?.Invoke(this, new RouteMatchedEventArgs(this.location, context.TemplateText, context.Parameters, context.Fragment));
+                OnMatch?.Invoke(this, new RouteMatchedEventArgs(location, context.TemplateText, context.Parameters, context.Fragment));
 
-                this.StateHasChanged();
+                StateHasChanged();
             }
             else
             {
                 if (isNavigationIntercepted)
                 {
-                    UriHelper.NavigateTo(this.location, forceLoad: true);
+                    NaviManager.NavigateTo(location, forceLoad: true);
                 }
             }
 
@@ -82,9 +81,13 @@ namespace BlazorRouter
 
         protected override Task OnInitializedAsync()
         {
-            this.baseUri = UriHelper.GetBaseUri();
-            this.location = UriHelper.GetAbsoluteUri();
-            UriHelper.OnLocationChanged += LocationChanged;
+            location = NaviManager.Uri;
+            NaviManager.LocationChanged += LocationChanged;
+
+            if (Assembly != null)
+            {
+                // TODO
+            }
             return Task.CompletedTask;
         }
 
@@ -94,11 +97,10 @@ namespace BlazorRouter
             return Task.CompletedTask;
         }
 
-        protected override async Task OnAfterRenderAsync()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (!this.navigationInterceptionEnabled && ComponentContext.IsConnected)
+            if (firstRender)
             {
-                this.navigationInterceptionEnabled = true;
                 await SwitchContent(false);
                 await NavigationInterception.EnableNavigationInterceptionAsync();
             }
@@ -106,7 +108,7 @@ namespace BlazorRouter
 
         public void Dispose()
         {
-            UriHelper.OnLocationChanged -= LocationChanged;
+            NaviManager.LocationChanged -= LocationChanged;
         }
     }
 }

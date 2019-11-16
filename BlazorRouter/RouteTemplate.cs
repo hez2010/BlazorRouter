@@ -6,7 +6,7 @@ namespace BlazorRouter
 {
     internal class RouteTemplate
     {
-        public static readonly char[] Separators = new[] { '/' };
+        public static readonly char[] Separators = { '/' };
 
         public RouteTemplate(string TemplateText, TemplateSegment[] segments)
         {

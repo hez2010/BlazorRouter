@@ -10,7 +10,7 @@ namespace BlazorRouter
         [Parameter] public string Template { get; set; } = "";
         [Parameter] public RenderFragment ChildContent { get; set; }
 
-        private bool hasRegisterd = false;
+        private bool hasRegisterd;
 
         protected override Task OnParametersSetAsync()
         {
