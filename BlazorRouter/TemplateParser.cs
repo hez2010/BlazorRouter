@@ -51,7 +51,7 @@ namespace BlazorRouter
 
                 if (segment[0] != '{')
                 {
-                    if (segment[^1] == '}')
+                    if (segment[segment.Length - 1] == '}')
                     {
                         throw new InvalidOperationException(
                             $"Invalid template '{template}'. Missing '{{' in parameter segment '{segment}'.");
@@ -60,7 +60,7 @@ namespace BlazorRouter
                 }
                 else
                 {
-                    if (segment[^1] != '}')
+                    if (segment[segment.Length - 1] != '}')
                     {
                         throw new InvalidOperationException(
                             $"Invalid template '{template}'. Missing '}}' in parameter segment '{segment}'.");
@@ -79,7 +79,7 @@ namespace BlazorRouter
                             $"Invalid template '{template}'. The character '{segment[invalidCharacter]}' in parameter segment '{segment}' is not allowed.");
                     }
 
-                    templateSegments[i] = new TemplateSegment(originalTemplate, segment[1..^1], isParameter: true);
+                    templateSegments[i] = new TemplateSegment(originalTemplate, segment.Substring(1, segment.Length - 2), isParameter: true);
                 }
             }
 
