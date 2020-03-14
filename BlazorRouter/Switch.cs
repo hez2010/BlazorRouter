@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
@@ -9,7 +8,7 @@ using Microsoft.AspNetCore.Components.Routing;
 
 namespace BlazorRouter
 {
-    public class Switch : ComponentBase, IDisposable
+    public sealed class Switch : ComponentBase, IDisposable
     {
         private int CreateCascadingValue<T>(RenderTreeBuilder builder, int seq, T value, string name, RenderFragment child)
         {
@@ -31,7 +30,7 @@ namespace BlazorRouter
         [Inject] private NavigationManager NaviManager { get; set; }
         [Inject] private INavigationInterception NavigationInterception { get; set; }
         [Parameter] public RenderFragment ChildContent { get; set; }
-        [Parameter] public Assembly Assembly { get; set; }
+        // [Parameter] public Assembly Assembly { get; set; }
         [Parameter] public EventHandler<RouteMatchedEventArgs> OnMatch { get; set; }
 
         private readonly RouteTable routes = new RouteTable();
@@ -84,10 +83,10 @@ namespace BlazorRouter
             location = NaviManager.Uri;
             NaviManager.LocationChanged += LocationChanged;
 
-            if (Assembly != null)
-            {
-                // TODO
-            }
+            //if (Assembly != null)
+            //{
+            //    // TODO
+            //}
             return Task.CompletedTask;
         }
 
