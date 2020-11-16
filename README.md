@@ -19,19 +19,79 @@ The order of routing is from the top to the bottom in `<Switch>`, and it will us
 If `Template` was not defined or defined as empty, it will match any path. 
 
 For example:
-```razor
+```html
 <Switch>
     <Route Template="/">
         <Home />
-    </Route>
-    <Route Template="/user/{id:string}">
-        <User />
     </Route>
     <Route Template="/login">
         <Account Action="Login" />
     </Route>
     <Route Template="/register">
         <Account Action="Register" />
+    </Route>
+    <Route Template="/user/{id:string}">
+        <User />
+    </Route>
+    <Route>
+        <p>404</p>
+    </Route>
+</Switch>
+```
+
+Besides, you can nested `Switch` to use nested routing:
+
+For example:
+```html
+<Switch>
+    <Route Template="/">
+        <Home />
+    </Route>
+    <Route Template="/login">
+        <Account Action="Login" />
+    </Route>
+    <Route Template="/register">
+        <Account Action="Register" />
+    </Route>
+    <Route Template="/user/{id:string}/*">
+        <Switch>
+            <Route Template="/user/{id:string}/edit">
+                <User Action="Edit" />
+            </Route>
+            <Route Template="/user/{id:string}/delete">
+                <User Action="Delete" />
+            </Route>
+            <Route>
+                <p>404 in /user/id</p>
+            </Route>
+        </Switch>
+    </Route>
+    <Route>
+        <p>404</p>
+    </Route>
+</Switch>
+```
+
+`*` represents one (can be zero if it's the last segment in template) segment, and you can use `**` to match multiple segments (>= 0).
+
+Note: `**` can only be the last segment.
+
+```html
+<Switch>
+    <Route Template="/">
+        <Home />
+    </Route>
+    <Route Template="/login">
+        <Account Action="Login" />
+    </Route>
+    <Route Template="/register">
+        <Account Action="Register" />
+    </Route>
+    <Route Template="/user/*/edit">
+        <User Action="Edit" />
+    </Route>
+    <Route Template="/user/*/delete">
+        <User Action="Delete" />
     </Route>
     <Route>
         <p>404</p>
