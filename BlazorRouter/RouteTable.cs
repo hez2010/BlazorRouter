@@ -5,22 +5,29 @@ namespace BlazorRouter
 {
     internal class RouteTable
     {
-        private readonly List<RouteEntry> routes = new List<RouteEntry>();
+        private readonly Dictionary<string, RouteEntry> routes = new ();
 
-        public void Add(string templateText, RenderFragment fragment)
+        public void Add(string id, string templateText, RenderFragment fragment)
         {
+            if (routes.ContainsKey(id)) return;
             var template = TemplateParser.ParseTemplate(templateText);
             var entry = new RouteEntry(template, fragment);
-            routes.Add(entry);
+            routes[id] = entry;
+        }
+
+        public void Remove(string id)
+        {
+            routes.Remove(id);
         }
 
         internal void Route(RouteContext routeContext)
         {
             foreach (var route in routes)
             {
-                route.Match(routeContext);
+                route.Value.Match(routeContext);
                 if (routeContext.Fragment != null)
                 {
+                    routeContext.Id = route.Key;
                     return;
                 }
             }

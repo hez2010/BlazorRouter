@@ -1,9 +1,8 @@
-﻿@using BlazorRouter.Sample.Data
-@inject WeatherForecastService ForecastService
+﻿@inject HttpClient Http
 
 <h1>Weather forecast</h1>
 
-<p>This component demonstrates fetching data from a service.</p>
+<p>This component demonstrates fetching data from the server.</p>
 
 @if (forecasts == null)
 {
@@ -11,6 +10,10 @@
 }
 else
 {
+    if (parameters?.ContainsKey("id") ?? false)
+    {
+        <p>Id: @parameters["id"], Value: @Value</p>
+    }
     <table class="table">
         <thead>
             <tr>
@@ -35,10 +38,23 @@ else
 }
 
 @code {
-    WeatherForecast[] forecasts;
+    private WeatherForecast[] forecasts;
+    [CascadingParameter(Name = "RouteParameters")] IDictionary<string, object> parameters { get; set; }
+    [Parameter] public string Value { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+    }
+
+    public class WeatherForecast
+    {
+        public DateTime Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
+        public string Summary { get; set; }
+
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
 }

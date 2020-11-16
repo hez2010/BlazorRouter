@@ -26,6 +26,8 @@ namespace BlazorRouter
         public string TemplateText { get; set; }
         public string[] Segments { get; }
         public RenderFragment Fragment { get; set; }
+        public bool IsPrefix { get; set; }
+        public string Id { get; set; }
 
         public IDictionary<string, object> Parameters { get; set; }
     }

@@ -1,33 +1,28 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <IsPackable>true</IsPackable>
-    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>hez2010</Authors>
     <Description>An awesome router for Blazor.</Description>
     <Copyright>hez2010</Copyright>
     <PackageProjectUrl>https://github.com/hez2010/BlazorRouter</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hez2010/BlazorRouter</RepositoryUrl>
-    <PackageReleaseNotes>Update Microsoft.AspNetCore.Components.Web to 3.1.4</PackageReleaseNotes>
+    <PackageReleaseNotes>Upgrade to .NET 5</PackageReleaseNotes>
     <PackageId>Hez2010.BlazorRouter</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>BlazorRouter</Product>
-    <Version>1.3.0</Version>
+    <Version>2.0.0</Version>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <Company>hez2010</Company>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- .js/.css files will be referenced via <script>/<link> tags; other content files will just be included in the app's 'dist' directory without any tags referencing them -->
-    <EmbeddedResource Include="content\**\*.js" LogicalName="blazor:js:%(RecursiveDir)%(Filename)%(Extension)" />
-    <EmbeddedResource Include="content\**\*.css" LogicalName="blazor:css:%(RecursiveDir)%(Filename)%(Extension)" />
-    <EmbeddedResource Include="content\**" Exclude="**\*.js;**\*.css" LogicalName="blazor:file:%(RecursiveDir)%(Filename)%(Extension)" />
+    <SupportedPlatform Include="browser" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
@@ -8,29 +7,26 @@ using Microsoft.AspNetCore.Components.Routing;
 
 namespace BlazorRouter
 {
-    public sealed class Switch : ComponentBase, IDisposable
+    public partial class Switch : ComponentBase, IDisposable
     {
-        private int CreateCascadingValue<T>(RenderTreeBuilder builder, int seq, T value, string name, RenderFragment child)
+        public static int CreateCascadingValue<TValue>(RenderTreeBuilder builder, int seq, string name, TValue value, RenderFragment child)
         {
-            builder.OpenComponent<CascadingValue<T>>(seq++);
-            builder.AddAttribute(seq++, "Value", value);
+            builder.OpenComponent<CascadingValue<TValue>>(seq++);
             builder.AddAttribute(seq++, "Name", name);
-            builder.AddAttribute(seq++, "ChildContent", child);
+            builder.AddAttribute(seq++, "Value", value);
+            builder.AddAttribute(seq++, "ChildContent", (RenderFragment)(builder2 => builder2.AddContent(seq++, child)));
             builder.CloseComponent();
             return seq;
         }
+
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
             var seq = 0;
-
-            seq = CreateCascadingValue(builder, seq, this, "SwitchInstance", ChildContent);
-            CreateCascadingValue(builder, seq, parameters, "RouteParameters", currentFragment);
+            seq = CreateCascadingValue(builder, seq, "SwitchInstance", this, ChildContent);
+            seq = CreateCascadingValue(builder, seq, "RouteParameters", parameters, currentFragment);
         }
 
-        [Inject] private NavigationManager NaviManager { get; set; }
-        [Inject] private INavigationInterception NavigationInterception { get; set; }
         [Parameter] public RenderFragment ChildContent { get; set; }
-        // [Parameter] public Assembly Assembly { get; set; }
         [Parameter] public EventHandler<RouteMatchedEventArgs> OnMatch { get; set; }
 
         private readonly RouteTable routes = new RouteTable();
@@ -39,10 +35,10 @@ namespace BlazorRouter
         private IDictionary<string, object> parameters;
 
         static readonly char[] queryOrHashStartChar = { '?', '#' };
-        private async void LocationChanged(object sender, LocationChangedEventArgs e)
+        private void LocationChanged(object sender, LocationChangedEventArgs e)
         {
             location = e.Location;
-            await SwitchContent(e.IsNavigationIntercepted);
+            SwitchContent();
         }
 
         private string StringUntilAny(string str, char[] chars)
@@ -51,7 +47,7 @@ namespace BlazorRouter
             return firstIndex < 0 ? str : str.Substring(0, firstIndex);
         }
 
-        private Task SwitchContent(bool isNavigationIntercepted)
+        private void SwitchContent()
         {
             var path = NaviManager.ToBaseRelativePath(NaviManager.Uri);
             path = "/" + StringUntilAny(path, queryOrHashStartChar);
@@ -63,19 +59,9 @@ namespace BlazorRouter
             {
                 currentFragment = context.Fragment;
                 parameters = context.Parameters;
-                OnMatch?.Invoke(this, new RouteMatchedEventArgs(location, context.TemplateText, context.Parameters, context.Fragment));
-
+                OnMatch?.Invoke(this, new RouteMatchedEventArgs(location, context.TemplateText, parameters, context.Fragment));
                 StateHasChanged();
             }
-            else
-            {
-                if (isNavigationIntercepted)
-                {
-                    NaviManager.NavigateTo(location, forceLoad: true);
-                }
-            }
-
-            return Task.CompletedTask;
         }
 
         protected override Task OnInitializedAsync()
@@ -83,24 +69,24 @@ namespace BlazorRouter
             location = NaviManager.Uri;
             NaviManager.LocationChanged += LocationChanged;
 
-            //if (Assembly != null)
-            //{
-            //    // TODO
-            //}
             return Task.CompletedTask;
         }
 
-        public Task RegisterRoute(RenderFragment fragment, string template)
+        public void RegisterRoute(string id, RenderFragment fragment, string template)
         {
-            routes.Add(template, fragment);
-            return Task.CompletedTask;
+            routes.Add(id, template, fragment);
+        }
+
+        public void UnregisterRoute(string id)
+        {
+            routes.Remove(id);
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                await SwitchContent(false);
+                SwitchContent();
                 await NavigationInterception.EnableNavigationInterceptionAsync();
             }
         }
@@ -109,5 +95,8 @@ namespace BlazorRouter
         {
             NaviManager.LocationChanged -= LocationChanged;
         }
+
+        [Inject] private INavigationInterception NavigationInterception { get; set; }
+        [Inject] private NavigationManager NaviManager { get; set; }
     }
 }

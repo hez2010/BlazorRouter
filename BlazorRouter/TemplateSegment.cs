@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace BlazorRouter
 {
-    internal class TemplateSegment
+    internal record TemplateSegment
     {
         public TemplateSegment(string template, string segment, bool isParameter)
         {
@@ -58,7 +58,7 @@ namespace BlazorRouter
             }
 
             matchedParameterValue = null;
-            return string.Equals(Value, pathSegment, StringComparison.OrdinalIgnoreCase);
+            return Value == "**" || Value == "*" || string.Equals(Value, pathSegment, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

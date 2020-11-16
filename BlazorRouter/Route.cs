@@ -1,30 +1,32 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorRouter
 {
-    public class Route : ComponentBase
+    public partial class Route : ComponentBase, IDisposable
     {
         [CascadingParameter(Name = "SwitchInstance")] protected Switch SwitchInstance { get; set; }
         [Parameter] public string Template { get; set; } = "";
         [Parameter] public RenderFragment ChildContent { get; set; }
 
-        private bool hasRegisterd;
+        private readonly string id = Guid.NewGuid().ToString();
 
-        protected override Task OnParametersSetAsync()
+        protected override void OnParametersSet()
         {
-            if (!hasRegisterd)
+            base.OnParametersSet();
+            if (SwitchInstance == null)
             {
-                hasRegisterd = true;
-                base.OnParametersSetAsync();
-                if (SwitchInstance == null)
-                {
-                    throw new InvalidOperationException("A Route markup must be included in a Switch markup.");
-                }
-                return SwitchInstance.RegisterRoute(ChildContent, Template);
+                throw new InvalidOperationException("A Route markup must be nested in a Switch markup.");
             }
-            return Task.CompletedTask;
+            SwitchInstance.RegisterRoute(id, ChildContent, Template);
+        }
+
+        public void Dispose()
+        {
+            if (SwitchInstance != null)
+            {
+                SwitchInstance.UnregisterRoute(id);
+            }
         }
     }
 }

@@ -10,6 +10,18 @@ Welcome to your new app. You have counted to @CountValue.
 <NavLink href="404-test">
     Click here to navigate to a non-existance page.
 </NavLink>
+<br />
+<NavLink href="nested-route/5">
+    Click here for nested route example 1.
+</NavLink>
+<br />
+<NavLink href="nested-route/5/hello">
+    Click here for nested route example 2.
+</NavLink>
+<br />
+<NavLink href="nested-route/5/world">
+    Click here for nested route example 3.
+</NavLink>
 
 @code {
     [Parameter] public int CountValue { get; set; }
