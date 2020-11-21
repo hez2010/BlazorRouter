@@ -1,5 +1,5 @@
 # BlazorRouter [![nuget](https://img.shields.io/nuget/vpre/Hez2010.BlazorRouter.svg)](https://www.nuget.org/packages/Hez2010.BlazorRouter)
-#### An awesome router for blazor
+An awesome router for blazor inspired by react-router, providing declarative routing for Blazor.
 
 ## Installation
 Via nuget package:
