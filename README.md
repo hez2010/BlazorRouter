@@ -39,7 +39,7 @@ For example:
 </Switch>
 ```
 
-Besides, you can nested `Switch` to use nested routing:
+Besides, you can nest `Switch` to use nested routing:
 
 For example:
 ```html
