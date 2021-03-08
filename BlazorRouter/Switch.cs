@@ -9,7 +9,7 @@ namespace BlazorRouter
 {
     public partial class Switch : ComponentBase, IDisposable
     {
-        public static int CreateCascadingValue<TValue>(RenderTreeBuilder builder, int seq, string name, TValue value, RenderFragment child)
+        private static int CreateCascadingValue<TValue>(RenderTreeBuilder builder, int seq, string name, TValue value, RenderFragment child)
         {
             builder.OpenComponent<CascadingValue<TValue>>(seq++);
             builder.AddAttribute(seq++, "Name", name);
@@ -23,7 +23,7 @@ namespace BlazorRouter
         {
             var seq = 0;
             seq = CreateCascadingValue(builder, seq, "SwitchInstance", this, ChildContent);
-            seq = CreateCascadingValue(builder, seq, "RouteParameters", parameters, currentFragment);
+            _ = CreateCascadingValue(builder, seq, "RouteParameters", parameters, currentFragment);
         }
 
         [Parameter] public RenderFragment ChildContent { get; set; }
@@ -33,6 +33,7 @@ namespace BlazorRouter
         private string location = "";
         private RenderFragment currentFragment;
         private IDictionary<string, object> parameters;
+        private bool firstMatched;
 
         static readonly char[] queryOrHashStartChar = { '?', '#' };
         private void LocationChanged(object sender, LocationChangedEventArgs e)
@@ -47,7 +48,7 @@ namespace BlazorRouter
             return firstIndex < 0 ? str : str.Substring(0, firstIndex);
         }
 
-        private void SwitchContent()
+        private bool SwitchContent()
         {
             var path = NaviManager.ToBaseRelativePath(NaviManager.Uri);
             path = "/" + StringUntilAny(path, queryOrHashStartChar);
@@ -61,20 +62,28 @@ namespace BlazorRouter
                 parameters = context.Parameters;
                 OnMatch?.Invoke(this, new RouteMatchedEventArgs(location, context.TemplateText, parameters, context.Fragment));
                 StateHasChanged();
+
+                return true;
             }
+
+            return false;
         }
 
-        protected override Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             location = NaviManager.Uri;
             NaviManager.LocationChanged += LocationChanged;
 
-            return Task.CompletedTask;
+            base.OnInitialized();
         }
 
         public void RegisterRoute(string id, RenderFragment fragment, string template)
         {
             routes.Add(id, template, fragment);
+            if (!firstMatched)
+            {
+                firstMatched = SwitchContent();
+            }
         }
 
         public void UnregisterRoute(string id)
@@ -86,7 +95,6 @@ namespace BlazorRouter
         {
             if (firstRender)
             {
-                SwitchContent();
                 await NavigationInterception.EnableNavigationInterceptionAsync();
             }
         }

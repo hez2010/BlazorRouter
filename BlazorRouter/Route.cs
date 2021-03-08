@@ -11,13 +11,14 @@ namespace BlazorRouter
 
         private readonly string id = Guid.NewGuid().ToString();
 
-        protected override void OnParametersSet()
+        protected override void OnInitialized()
         {
-            base.OnParametersSet();
+            base.OnInitialized();
             if (SwitchInstance == null)
             {
                 throw new InvalidOperationException("A Route markup must be nested in a Switch markup.");
             }
+
             SwitchInstance.RegisterRoute(id, ChildContent, Template);
         }
 
