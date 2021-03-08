@@ -34,12 +34,21 @@ namespace BlazorRouter
         private RenderFragment currentFragment;
         private IDictionary<string, object> parameters;
         private bool firstMatched;
+        private RouteContext context;
 
         static readonly char[] queryOrHashStartChar = { '?', '#' };
         private void LocationChanged(object sender, LocationChangedEventArgs e)
         {
             location = e.Location;
+            UpdateRouteContext();
             SwitchContent();
+        }
+
+        private void UpdateRouteContext()
+        {
+            var path = NaviManager.ToBaseRelativePath(NaviManager.Uri);
+            path = "/" + StringUntilAny(path, queryOrHashStartChar);
+            context = new RouteContext(path);
         }
 
         private string StringUntilAny(string str, char[] chars)
@@ -48,13 +57,16 @@ namespace BlazorRouter
             return firstIndex < 0 ? str : str.Substring(0, firstIndex);
         }
 
-        private bool SwitchContent()
+        private bool SwitchContent(string id = null, RouteEntry entry = null)
         {
-            var path = NaviManager.ToBaseRelativePath(NaviManager.Uri);
-            path = "/" + StringUntilAny(path, queryOrHashStartChar);
-
-            var context = new RouteContext(path);
-            routes.Route(context);
+            if (id == null || entry == null)
+            {
+                routes.Route(context);
+            }
+            else
+            {
+                routes.Route(context, id, entry);
+            }
 
             if (context.Fragment != null)
             {
@@ -73,16 +85,17 @@ namespace BlazorRouter
         {
             location = NaviManager.Uri;
             NaviManager.LocationChanged += LocationChanged;
+            UpdateRouteContext();
 
             base.OnInitialized();
         }
 
         public void RegisterRoute(string id, RenderFragment fragment, string template)
         {
-            routes.Add(id, template, fragment);
+            var entry = routes.Add(id, template, fragment);
             if (!firstMatched)
             {
-                firstMatched = SwitchContent();
+                firstMatched = SwitchContent(id, entry);
             }
         }
 

@@ -5,14 +5,15 @@ namespace BlazorRouter
 {
     internal class RouteTable
     {
-        private readonly Dictionary<string, RouteEntry> routes = new ();
+        private readonly Dictionary<string, RouteEntry> routes = new();
 
-        public void Add(string id, string templateText, RenderFragment fragment)
+        public RouteEntry Add(string id, string templateText, RenderFragment fragment)
         {
-            if (routes.ContainsKey(id)) return;
+            if (routes.ContainsKey(id)) return routes[id];
             var template = TemplateParser.ParseTemplate(templateText);
             var entry = new RouteEntry(template, fragment);
             routes[id] = entry;
+            return entry;
         }
 
         public void Remove(string id)
@@ -30,6 +31,15 @@ namespace BlazorRouter
                     routeContext.Id = route.Key;
                     return;
                 }
+            }
+        }
+
+        internal void Route(RouteContext routeContext, string id, RouteEntry entry)
+        {
+            entry.Match(routeContext);
+            if (routeContext.Fragment != null)
+            {
+                routeContext.Id = id;
             }
         }
     }
