@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace BlazorRouter
 {
-    internal record TemplateSegment
+    internal class TemplateSegment
     {
         public TemplateSegment(string template, string segment, bool isParameter)
         {
