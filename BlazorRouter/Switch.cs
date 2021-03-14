@@ -21,6 +21,7 @@ namespace BlazorRouter
 
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
+            base.BuildRenderTree(builder);
             var seq = 0;
             seq = CreateCascadingValue(builder, seq, "SwitchInstance", this, ChildContent);
             _ = CreateCascadingValue(builder, seq, "RouteParameters", parameters, currentFragment);

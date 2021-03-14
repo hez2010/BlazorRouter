@@ -8,11 +8,11 @@
     <Copyright>hez2010</Copyright>
     <PackageProjectUrl>https://github.com/hez2010/BlazorRouter</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hez2010/BlazorRouter</RepositoryUrl>
-    <PackageReleaseNotes>Performance improvements and support server prerender</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix states not being passed into routed contents</PackageReleaseNotes>
     <PackageId>Hez2010.BlazorRouter</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>BlazorRouter</Product>
-    <Version>2.1.1</Version>
+    <Version>2.1.2</Version>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <Company>hez2010</Company>
   </PropertyGroup>
