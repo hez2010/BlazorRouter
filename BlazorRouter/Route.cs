@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorRouter
@@ -11,15 +12,15 @@ namespace BlazorRouter
 
         private readonly string id = Guid.NewGuid().ToString();
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            base.OnInitialized();
+            await base.OnInitializedAsync();
             if (SwitchInstance == null)
             {
                 throw new InvalidOperationException("A Route markup must be nested in a Switch markup.");
             }
 
-            SwitchInstance.RegisterRoute(id, ChildContent, Template);
+            await SwitchInstance.RegisterRouteAsync(id, ChildContent, Template);
         }
 
         public void Dispose()

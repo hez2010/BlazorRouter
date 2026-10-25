@@ -99,6 +99,34 @@ Note: `**` can only be the last segment.
 </Switch>
 ```
 
+## Asynchronous route matching
+
+Use `OnMatch` on a `Switch` to await asynchronous work before its matched content is rendered:
+
+```razor
+@using System.Threading.Tasks
+@using BlazorRouter
+
+<Switch OnMatch="PrepareRouteAsync">
+    <Route Template="/items/{id:int}">
+        <p>@message</p>
+    </Route>
+</Switch>
+
+@code {
+    private string message;
+
+    private async Task PrepareRouteAsync(RouteMatchedEventArgs args)
+    {
+        // Replace this delay with your asynchronous initialization or data loading.
+        await Task.Delay(100);
+        message = $"Item {args.Parameters["id"]} is ready.";
+    }
+}
+```
+
+`OnMatch` is an `EventCallback<RouteMatchedEventArgs>` and accepts synchronous or `Task`-returning handlers. Handlers receive a single `RouteMatchedEventArgs` argument.
+
 ## Live Example
 [Visit Sample](https://hez2010.github.io/BlazorRouter)  
 For source, please check out `BlazorRouter.Sample`.

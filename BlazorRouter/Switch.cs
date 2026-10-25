@@ -28,26 +28,39 @@ namespace BlazorRouter
         }
 
         [Parameter] public RenderFragment ChildContent { get; set; }
-        [Parameter] public EventHandler<RouteMatchedEventArgs> OnMatch { get; set; }
+        [Parameter] public EventCallback<RouteMatchedEventArgs> OnMatch { get; set; }
 
         private readonly RouteTable routes = new RouteTable();
         private string location = "";
         private RenderFragment currentFragment;
         private IDictionary<string, object> parameters;
         private bool firstMatched;
+        private bool disposed;
         private RouteContext context;
 
         static readonly char[] queryOrHashStartChar = { '?', '#' };
-        private void LocationChanged(object sender, LocationChangedEventArgs e)
+        private async void LocationChanged(object sender, LocationChangedEventArgs e)
         {
-            location = e.Location;
-            UpdateRouteContext();
-            SwitchContent();
+            try
+            {
+                await InvokeAsync(async () =>
+                {
+                    if (disposed) return;
+
+                    location = e.Location;
+                    UpdateRouteContext();
+                    await SwitchContentAsync();
+                });
+            }
+            catch (Exception exception)
+            {
+                await DispatchExceptionAsync(exception);
+            }
         }
 
         private void UpdateRouteContext()
         {
-            var path = NaviManager.ToBaseRelativePath(NaviManager.Uri);
+            var path = NaviManager.ToBaseRelativePath(location);
             path = "/" + StringUntilAny(path, queryOrHashStartChar);
             context = new RouteContext(path);
         }
@@ -58,8 +71,10 @@ namespace BlazorRouter
             return firstIndex < 0 ? str : str.Substring(0, firstIndex);
         }
 
-        private bool SwitchContent(string id = null, RouteEntry entry = null)
+        private async Task SwitchContentAsync(string id = null, RouteEntry entry = null)
         {
+            if (disposed) return;
+
             if (id == null || entry == null)
             {
                 routes.Route(context);
@@ -69,17 +84,35 @@ namespace BlazorRouter
                 routes.Route(context, id, entry);
             }
 
-            if (context.Fragment != null)
-            {
-                currentFragment = context.Fragment;
-                parameters = context.Parameters;
-                OnMatch?.Invoke(this, new RouteMatchedEventArgs(location, context.TemplateText, parameters, context.Fragment));
-                StateHasChanged();
+            if (context.Fragment == null) return;
 
-                return true;
+            // Reserve the first match before yielding to other route registrations.
+            firstMatched = true;
+            var matchedContext = context;
+            var args = new RouteMatchedEventArgs(location, matchedContext.TemplateText, matchedContext.Parameters, matchedContext.Fragment);
+            var onMatch = OnMatch;
+
+            if (onMatch.HasDelegate)
+            {
+                // Hide routed content while prefetching, including during callback-triggered renders.
+                currentFragment = null;
+                parameters = null;
+
+                var matchTask = onMatch.InvokeAsync(args);
+                if (!matchTask.IsCompleted)
+                {
+                    StateHasChanged();
+                }
+
+                await matchTask;
+
+                // A newer navigation or disposal must win over an older callback.
+                if (disposed || context != matchedContext) return;
             }
 
-            return false;
+            currentFragment = matchedContext.Fragment;
+            parameters = matchedContext.Parameters;
+            StateHasChanged();
         }
 
         protected override void OnInitialized()
@@ -91,13 +124,12 @@ namespace BlazorRouter
             base.OnInitialized();
         }
 
-        public void RegisterRoute(string id, RenderFragment fragment, string template)
+        public Task RegisterRouteAsync(string id, RenderFragment fragment, string template)
         {
+            if (disposed) return Task.CompletedTask;
+
             var entry = routes.Add(id, template, fragment);
-            if (!firstMatched)
-            {
-                firstMatched = SwitchContent(id, entry);
-            }
+            return firstMatched ? Task.CompletedTask : SwitchContentAsync(id, entry);
         }
 
         public void UnregisterRoute(string id)
@@ -115,6 +147,7 @@ namespace BlazorRouter
 
         public void Dispose()
         {
+            disposed = true;
             NaviManager.LocationChanged -= LocationChanged;
         }
 

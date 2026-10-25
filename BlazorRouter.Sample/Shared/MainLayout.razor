@@ -1,5 +1,6 @@
 @inherits LayoutComponentBase
 @using BlazorRouter.Sample.Pages
+@inject HttpClient Http
 
 <div class="page">
     <div class="sidebar">
@@ -12,7 +13,7 @@
         </div>
 
         <div class="content px-4">
-            <Switch>
+            <Switch OnMatch="OnRouteMatchAsync">
                 <Route Template="/">
                     <Home CountValue="@countValue"></Home>
                 </Route>
@@ -23,7 +24,7 @@
                     <Counter @bind-CurrentCount="countValue" ChangeCount="@ChangeCountValue"></Counter>
                 </Route>
                 <Route Template="/fetchdata">
-                    <FetchData />
+                    <FetchData RouteMessage="@routeMessage" />
                 </Route>
                 <Route Template="/*/test">
                     <p>Test page</p>
@@ -31,13 +32,13 @@
                 <Route Template="/nested-route/{id:int}/*">
                     <Switch>
                         <Route Template="/nested-route/{id:int}">
-                            <FetchData Value="1" />
+                            <FetchData RouteMessage="@routeMessage" Value="1" />
                         </Route>
                         <Route Template="/nested-route/{id:int}/hello">
-                            <FetchData Value="2" />
+                            <FetchData RouteMessage="@routeMessage" Value="2" />
                         </Route>
                         <Route Template="/nested-route/{id:int}/world">
-                            <FetchData Value="3" />
+                            <FetchData RouteMessage="@routeMessage" Value="3" />
                         </Route>
                         <Route>
                             <h1 class="text-danger">Error</h1>
@@ -57,6 +58,16 @@
 
 @code {
     private int countValue { get; set; } = 0;
+    private string routeMessage;
+
+    private async Task OnRouteMatchAsync(RouteMatchedEventArgs args)
+    {
+        if (args.Template == "fetchdata" || args.Template == "nested-route/{id:int}/*")
+        {
+            // Load a separate value before rendering the matched content and nested switches.
+            routeMessage = await Http.GetStringAsync("sample-data/route-message.txt");
+        }
+    }
 
     void ChangeCountValue(int value)
     {
