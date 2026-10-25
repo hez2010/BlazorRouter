@@ -54,8 +54,14 @@ namespace BlazorRouter
             }
             catch (Exception exception)
             {
-                await DispatchExceptionAsync(exception);
+                await DispatchExceptionIfNotDisposedAsync(exception);
             }
+        }
+
+        private Task DispatchExceptionIfNotDisposedAsync(Exception exception)
+        {
+            // Check on the dispatcher so disposal cannot interleave with exception dispatch.
+            return InvokeAsync(() => disposed ? Task.CompletedTask : DispatchExceptionAsync(exception));
         }
 
         private void UpdateRouteContext()
@@ -106,7 +112,7 @@ namespace BlazorRouter
 
                 await matchTask;
 
-                // A newer navigation or disposal must win over an older callback.
+                // Navigation, route removal, or disposal must win over an older callback.
                 if (disposed || context != matchedContext) return;
             }
 
@@ -132,9 +138,36 @@ namespace BlazorRouter
             return firstMatched ? Task.CompletedTask : SwitchContentAsync(id, entry);
         }
 
-        public void UnregisterRoute(string id)
+        public async Task UnregisterRouteAsync(string id)
         {
             routes.Remove(id);
+            if (disposed || context?.Id != id) return;
+
+            // Replacing the context invalidates any callback awaiting this route's match.
+            UpdateRouteContext();
+            firstMatched = false;
+            currentFragment = null;
+            parameters = null;
+            var unmatchedContext = context;
+
+            try
+            {
+                await InvokeAsync(async () =>
+                {
+                    if (disposed || context != unmatchedContext) return;
+
+                    await SwitchContentAsync();
+                    if (!disposed && context == unmatchedContext && context.Fragment == null)
+                    {
+                        // Clear the removed route even when no remaining route matches.
+                        StateHasChanged();
+                    }
+                });
+            }
+            catch (Exception exception)
+            {
+                await DispatchExceptionIfNotDisposedAsync(exception);
+            }
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)

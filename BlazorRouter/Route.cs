@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace BlazorRouter
 {
-    public partial class Route : ComponentBase, IDisposable
+    public partial class Route : ComponentBase, IAsyncDisposable
     {
         [CascadingParameter(Name = "SwitchInstance")] protected Switch SwitchInstance { get; set; }
         [Parameter] public string Template { get; set; } = "";
@@ -23,11 +23,11 @@ namespace BlazorRouter
             await SwitchInstance.RegisterRouteAsync(id, ChildContent, Template);
         }
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
             if (SwitchInstance != null)
             {
-                SwitchInstance.UnregisterRoute(id);
+                await SwitchInstance.UnregisterRouteAsync(id);
             }
         }
     }

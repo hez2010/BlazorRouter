@@ -1,0 +1,78 @@
+@implements IDisposable
+
+<h1>Dynamic routes</h1>
+
+<p>Register and unregister a route without navigating away. The switch stays mounted while the route is added or removed.</p>
+
+<div class="mb-3">
+    <button class="btn btn-primary mr-2" @onclick="RegisterDynamicRoute" disabled="@routeRegistered">Register route</button>
+    <button class="btn btn-secondary" @onclick="UnregisterDynamicRoute" disabled="@(!routeRegistered)">Unregister route</button>
+</div>
+
+<div class="form-check mb-3">
+    <input id="delay-route-match" class="form-check-input" type="checkbox" @bind="delayMatch" />
+    <label class="form-check-label" for="delay-route-match">Simulate asynchronous matching (1 second)</label>
+</div>
+
+<p>With the delay enabled, try unregistering the route while it is preparing.</p>
+<p role="status">@status</p>
+<p>Completed matches: @matchCount</p>
+
+<Switch OnMatch="HandleMatchAsync">
+    @if (routeRegistered)
+    {
+        <Route Template="/dynamic-routes">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h5">Dynamic route content</h2>
+                    <p>Matched template: <code>@matchedTemplate</code></p>
+                    <p class="mb-0">Unregister this route to remove its content, then register it again to match it again.</p>
+                </div>
+            </div>
+        </Route>
+    }
+</Switch>
+
+@code {
+    private bool routeRegistered;
+    private bool delayMatch = true;
+    private int matchCount;
+    private int matchVersion;
+    private string matchedTemplate;
+    private string status = "No route is registered.";
+
+    private void RegisterDynamicRoute()
+    {
+        routeRegistered = true;
+    }
+
+    private void UnregisterDynamicRoute()
+    {
+        routeRegistered = false;
+        matchVersion++;
+        status = "Route unregistered.";
+    }
+
+    private async Task HandleMatchAsync(RouteMatchedEventArgs args)
+    {
+        var version = ++matchVersion;
+        status = "Preparing the dynamic route...";
+
+        if (delayMatch)
+        {
+            await Task.Delay(1000);
+        }
+
+        // The callback owns its state, so ignore results from a removed route or page.
+        if (version != matchVersion) return;
+
+        matchedTemplate = args.Template;
+        matchCount++;
+        status = "Dynamic route matched.";
+    }
+
+    public void Dispose()
+    {
+        matchVersion++;
+    }
+}
